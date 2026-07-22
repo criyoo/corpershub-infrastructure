@@ -9,12 +9,12 @@ on:
       run_delete_job:
         description: "Run the DEV delete job"
         required: true
-        default: false
+        default: true
         type: boolean
       run_other_jobs:
         description: "Run the DEV setup, lint, plan, and apply jobs"
         required: true
-        default: true
+        default: false
         type: boolean
 
 permissions:
@@ -69,6 +69,7 @@ jobs:
               - "cloudflared/**"
               - "scripts/**"
               - "terraform/**"
+              - ".github/workflows/dev.yml"
 
   setup:
     needs: detect-changes
@@ -217,7 +218,7 @@ jobs:
         run: make apply
 
   delete-dev:
-    if: github.event_name == 'workflow_dispatch' && inputs.run_delete_job == true
+    if: github.event_name == 'push' && inputs.run_delete_job == true
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: development
