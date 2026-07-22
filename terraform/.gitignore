@@ -24,5 +24,3 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Local infrastructure helpers
-/infra/scripts/query-database.sh

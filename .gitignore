@@ -16,6 +16,7 @@ pnpm-debug.log*
 .env.*
 !.env.example
 !.env.*.example
+!terraform/envs/secrets/.env.*.age
 !.env.sample
 !.env.*.sample
 
@@ -57,4 +58,3 @@ out/
 /apps/web/.next/
 /apps/web/out/
 *.tsbuildinfo
-
