@@ -1,0 +1,35 @@
+[
+  {
+    "name": "${name}",
+    "image": "${image}",
+    "essential": true,
+    "environment": ${environment
+    },
+    "secrets": ${secrets
+    }%{ if has_port_mappings
+    },
+    "portMappings": ${port_mappings
+    }%{ endif
+    }%{ if has_command
+    },
+    "command": ${command
+    }%{ endif
+    }%{ if has_mount_points
+    },
+    "mountPoints": ${mount_points
+    }%{ endif
+    }%{ if has_health_check
+    },
+    "healthCheck": ${health_check
+    }%{ endif
+    },
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-region": "${region}",
+        "awslogs-group": "${log_group}",
+        "awslogs-stream-prefix": "${stream_prefix}"
+      }
+    }
+  }
+]
