@@ -5,19 +5,24 @@ on:
     branches:
       - development
   workflow_dispatch:
+    inputs:
+      destroy:
+        description: Destroy infrastructure
+        required: true
+        type: boolean
+        default: false # Do not change
+
 
 env:
+  DESTROY_DEV: "true" # "false" = run other jobs & skip destroy job; and "true" = run only the destroy job & skip all other jobs
   AWS_USE_PROFILE: "0"
   AWS_REGION: "eu-west-1"
   TERRAFORM_VERSION: "1.15.0"
-  WORKSPACE: ${{ vars.WORKSPACE }}
+  WORKSPACE: "${{ vars.WORKSPACE }}"
   ENCRYPTED_ENV_FILE: "envs/secrets/.env.${{ vars.WORKSPACE }}.age"
   DECRYPTED_ENV_FILE: "envs/secrets/.env.${{ vars.WORKSPACE }}"
   AGE_KEY_FILE: "envs/secrets/.env.${{ vars.WORKSPACE }}.key"
-  RUN_OTHER_JOBS: "false"
-  RUN_DELETE_JOB: "true"
 
-  
 permissions:
   contents: read
   id-token: write
@@ -34,16 +39,35 @@ defaults:
 
 
 jobs:
+  determine-action:
+    name: Determine Terraform Action
+    runs-on: ubuntu-latest
+    environment: development
+    outputs:
+      destroy: ${{ steps.action.outputs.destroy }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Determine requested action
+        id: action
+        run: echo "destroy=${{ vars.DESTROY == 'true' && ((github.event_name == 'workflow_dispatch' && inputs.destroy) || (github.event_name == 'push' && env.DESTROY_DEV == 'true')) }}" >> "$GITHUB_OUTPUT"
+
+
   detect-changes:
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.RUN_OTHER_JOBS == 'true'
+    needs: determine-action
+    if: ${{ needs.determine-action.outputs.destroy != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 1
+    environment: development
     outputs:
       changes: ${{ steps.filter.outputs.repo }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: dorny/paths-filter@v3
+      - name: Check for file Changes
+        uses: dorny/paths-filter@v3
         id: filter
         with:
           base: ${{ github.ref }}
@@ -52,15 +76,19 @@ jobs:
               - "cloudflared/**"
               - "scripts/**"
               - "terraform/**"
+              - ".github/workflows/${{ vars.WORKSPACE }}.yml"
 
   setup:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.changes == 'true'
+    needs:
+      - determine-action
+      - detect-changes
+    if: ${{ needs.determine-action.outputs.destroy != 'true' && needs.detect-changes.outputs.changes == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
     environment: development
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Install age
         run: |
@@ -93,14 +121,16 @@ jobs:
 
   lint:
     needs:
+      - determine-action
       - detect-changes
       - setup
-    if: needs.detect-changes.outputs.changes == 'true'
+    if: ${{ needs.determine-action.outputs.destroy != 'true' && needs.detect-changes.outputs.changes == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
     environment: development
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Download decrypted secrets
         uses: actions/download-artifact@v4
@@ -122,18 +152,20 @@ jobs:
       - name: Terraform validate
         run: |
           make fmt
-          make validate
+          make lint WORKSPACE=${{ vars.WORKSPACE }}
 
   plan:
     needs:
+      - determine-action
       - detect-changes
       - lint
-    if: needs.detect-changes.outputs.changes == 'true'
+    if: ${{ needs.determine-action.outputs.destroy != 'true' && needs.detect-changes.outputs.changes == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: development
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Download decrypted secrets
         uses: actions/download-artifact@v4
@@ -153,7 +185,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform plan
-        run: make plan
+        run: make plan WORKSPACE=${{ vars.WORKSPACE }}
 
       - name: Upload plan artifact
         uses: actions/upload-artifact@v4
@@ -164,14 +196,16 @@ jobs:
 
   apply:
     needs:
+      - determine-action
       - detect-changes
       - plan
-    if: needs.detect-changes.outputs.changes == 'true'
+    if: ${{ needs.determine-action.outputs.destroy != 'true' && needs.detect-changes.outputs.changes == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: development
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Download decrypted secrets
         uses: actions/download-artifact@v4
@@ -197,20 +231,18 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform apply
-        run: make apply
+        run: make apply WORKSPACE=${{ vars.WORKSPACE }}
 
-  delete-dev:
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.RUN_DELETE_JOB == 'true'
+
+  destroy:
+    needs: determine-action
+    if: ${{ needs.determine-action.outputs.destroy == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: development
-    env:
-      WORKSPACE: dev
-      ENCRYPTED_ENV_FILE: "envs/secrets/.env.dev.age"
-      DECRYPTED_ENV_FILE: "envs/secrets/.env.dev"
-      AGE_KEY_FILE: "envs/secrets/.env.dev.key"
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Install age
         run: |
@@ -241,4 +273,4 @@ jobs:
       - name: Terraform destroy DEV
         env:
           TF_CLI_ARGS_destroy: "-auto-approve -input=false"
-        run: make destroy
+        run: make destroy WORKSPACE=${{ vars.WORKSPACE }}

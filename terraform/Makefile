@@ -83,6 +83,3 @@ unlock:
 	else \
 		echo "No lock file found"; \
 	fi
-
-
-
