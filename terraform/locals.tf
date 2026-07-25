@@ -89,7 +89,7 @@ locals {
       PREMBLY_API_BASE_URL                 = "https://api.prembly.com"
       PREMBLY_NIN_API_URL                  = "/verification/vnin"
       PREMBLY_CAC_API_URL                  = "/verification/cac"
-      PREMBLY_TIMEOUT_SECONDS              = "30"
+      PREMBLY_TIMEOUT_SECONDS              = "60"
       PREMBLY_LOOKUP_CACHE_TIMEOUT_SECONDS = "86400"
       PREMBLY_WEBHOOK_TOKEN_CACHE_SECONDS  = "604800"
       PREMBLY_CAC_COMPANY_TYPE             = "RC"
