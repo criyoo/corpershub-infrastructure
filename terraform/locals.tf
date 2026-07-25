@@ -91,6 +91,7 @@ locals {
       PREMBLY_CAC_API_URL                  = "/verification/cac"
       PREMBLY_TIMEOUT_SECONDS              = "30"
       PREMBLY_LOOKUP_CACHE_TIMEOUT_SECONDS = "86400"
+      PREMBLY_WEBHOOK_TOKEN_CACHE_SECONDS  = "604800"
       PREMBLY_CAC_COMPANY_TYPE             = "RC"
 
       # Keep these aligned with Flutterwave Dashboard > Settings > Business preferences.
