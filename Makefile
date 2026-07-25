@@ -5,7 +5,7 @@ INFRA_MAKE := $(MAKE) -C terraform WORKSPACE=$(WORKSPACE) AWS_PROFILE=$(AWS_PROF
 COMPOSE := docker compose -f docker-compose.yml
 
 
-.PHONY: 
+.PHONY:
 
 
 # Secrets
@@ -18,7 +18,7 @@ decrypt:
 encrypt:
 	@$(INFRA_MAKE) encrypt
 
-encrypt-all: 
+encrypt-all:
 	@$(INFRA_MAKE) encrypt-all
 
 # AWS
@@ -28,8 +28,8 @@ reconfig:
 init:
 	@$(INFRA_MAKE) init
 
-validate:
-	@$(INFRA_MAKE) validate
+lint:
+	@$(INFRA_MAKE) lint
 
 plan:
 	@$(INFRA_MAKE) plan

@@ -47,7 +47,7 @@ reconfig: fmt
 workspace: init
 	@bash ../scripts/workspace.sh $(WORKSPACE)
 
-validate: load-env workspace
+lint: load-env workspace
 	@$(TF) fmt -diff -check -recursive
 	@$(LOAD_ENV) && $(TF) validate
 
