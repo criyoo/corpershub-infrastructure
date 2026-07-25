@@ -48,6 +48,7 @@ jobs:
               - "cloudflared/**"
               - "scripts/**"
               - "terraform/**"
+              - ".github/workflows/prod.yml"
 
   setup:
     needs: detect-changes

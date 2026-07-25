@@ -47,14 +47,14 @@ reconfig: fmt
 workspace: init
 	@bash ../scripts/workspace.sh $(WORKSPACE)
 
-validate: load-env workspace
+lint: load-env workspace
 	@$(TF) fmt -diff -check -recursive
 	@$(LOAD_ENV) && $(TF) validate
 
-plan: validate
+plan: lint
 	@$(LOAD_ENV) && $(TF) plan $(WORKSPACE_VARS) -out=tfplan
 
-plan-nolock: validate
+plan-nolock: lint
 	@$(LOAD_ENV) && $(TF) plan $(WORKSPACE_VARS) -lock=false
 
 apply: plan
@@ -83,6 +83,3 @@ unlock:
 	else \
 		echo "No lock file found"; \
 	fi
-
-
-
