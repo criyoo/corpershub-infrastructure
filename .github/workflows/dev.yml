@@ -14,7 +14,7 @@ on:
 
 
 env:
-  DESTROY_DEV: "true" # "false" = run other jobs & skip destroy job; and "true" = run only the destroy job & skip all other jobs
+  DESTROY_DEV: "false" # "false" = run other jobs & skip destroy job; and "true" = run only the destroy job & skip all other jobs
   AWS_USE_PROFILE: "0"
   AWS_REGION: "eu-west-1"
   TERRAFORM_VERSION: "1.15.0"
