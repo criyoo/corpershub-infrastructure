@@ -81,10 +81,17 @@ locals {
       OTP_EMAIL_ASYNC           = tostring(local.async_otp_email)
 
       # Verification API for NIN and CAC
-      DIKRIPT_API_BASE_URL    = "https://api.dikript.com"
-      DIKRIPT_NIN_API_URL     = "/dikript/verification/api/v1/getnin"
-      DIKRIPT_CAC_API_URL     = "/dikript/verification/api/v1/getcacbasic"
-      DIKRIPT_TIMEOUT_SECONDS = "30"
+      VERIFICATION_SERVICE                 = "prembly"
+      DIKRIPT_API_BASE_URL                 = "https://api.dikript.com"
+      DIKRIPT_NIN_API_URL                  = "/dikript/verification/api/v1/getnin"
+      DIKRIPT_CAC_API_URL                  = "/dikript/verification/api/v1/getcacbasic"
+      DIKRIPT_TIMEOUT_SECONDS              = "30"
+      PREMBLY_API_BASE_URL                 = "https://api.prembly.com"
+      PREMBLY_NIN_API_URL                  = "/verification/vnin"
+      PREMBLY_CAC_API_URL                  = "/verification/cac"
+      PREMBLY_TIMEOUT_SECONDS              = "30"
+      PREMBLY_LOOKUP_CACHE_TIMEOUT_SECONDS = "86400"
+      PREMBLY_CAC_COMPANY_TYPE             = "RC"
 
       # Keep these aligned with Flutterwave Dashboard > Settings > Business preferences.
       FLUTTERWAVE_API_VERSION                    = local.flutterwave_api_verion
