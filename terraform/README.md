@@ -4,7 +4,7 @@ This directory is a single Terraform root module for the Corpershub AWS environm
 
 ## Local secret workflow
 
-Local runs use the same pattern as `rentdirect_serverless/infra`:
+Local runs use the same pattern as `corpershub/infra`:
 
 - `envs/secrets/.env.dev` and `envs/secrets/.env.prod` hold local-only secrets.
 - `envs/secrets/.env.<env>.age` can be committed if you want encrypted copies in git.
