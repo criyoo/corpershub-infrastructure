@@ -14,7 +14,7 @@ enable_waf                 = false
 enable_container_insights  = false
 enable_deletion_protection = false
 log_retention_in_days      = 1
-manage_root_email_dns      = false
+manage_root_email_dns      = true
 
 # ECS Services
 api = {
