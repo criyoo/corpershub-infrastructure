@@ -9,11 +9,15 @@ terraform {
   }
 
   backend "s3" {
-    bucket               = "corpershub-statefile"
+    bucket               = "corpershub-terraform-statefile" # "corpershub-statefile"
     key                  = "corpershub.tfstate"
     region               = "eu-west-1"
     encrypt              = true
     use_lockfile         = true
     workspace_key_prefix = "envs"
+    # assume_role = {
+    #   role_arn = "arn:aws:iam::088668668196:role/Admin"
+    # }
   }
 }
+

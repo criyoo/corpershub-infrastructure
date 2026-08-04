@@ -97,6 +97,38 @@ services:
     networks:
       - corpershub-network
 
+  migrate:
+    build:
+      context: ../apps/api
+      dockerfile: Dockerfile
+      target: development
+    env_file:
+      - ../apps/api/.env.local
+    environment:
+      SEED_DEMO_ACCOUNTS: "1"
+      COLLECTSTATIC_ON_STARTUP: "1"
+      DJANGO_SUPERUSER_EMAIL: "admin@corpershub.local"
+      DJANGO_SUPERUSER_PASSWORD: "ifG0dbi4mi"
+      DJANGO_SUPERUSER_USERNAME: "Admin"
+      DJANGO_SUPERUSER_FIRST_NAME: "Admin"
+      DJANGO_SUPERUSER_LAST_NAME: "Admin"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      minio-create-bucket:
+        condition: service_completed_successfully
+    command:
+      - /bin/sh
+      - -c
+      - python manage.py migrate --noinput && python manage.py create_superuser && python manage.py seed_demo_data
+    volumes:
+      - ../apps/api:/app
+      - media_files:/app/uploads
+    networks:
+      - corpershub-network
+
   api:
     build:
       context: ../apps/api
@@ -119,6 +151,8 @@ services:
         condition: service_healthy
       valkey:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       minio-create-bucket:
         condition: service_completed_successfully
     volumes:

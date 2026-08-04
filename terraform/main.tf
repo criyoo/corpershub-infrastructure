@@ -106,6 +106,8 @@ module "ecs_service" {
   app_security_group_id        = module.security.app_security_group_id
   api_domain_name              = var.api_domain_name
   database                     = var.database
+  alb                          = module.networking.alb
+  alb_target_group             = module.networking.alb_target_group
   api_target_group_arn         = module.networking.api_target_group_arn
   aws_efs_mount_targets        = module.storage.aws_efs_mount_targets
   aws_efs_access_point_id      = module.storage.aws_efs_access_point_id

@@ -26,6 +26,7 @@ provider "aws" {
   }
 }
 
+
 # Root Account / eu-west-1 region
 provider "aws" {
   alias  = "root"

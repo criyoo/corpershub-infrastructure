@@ -184,14 +184,20 @@ variable "manage_root_email_dns" {
 variable "hostinger_email_dns" {
   description = "Hostinger Email DNS records for the root domain."
   type = object({
-    ttl          = number
+    mx_ttl       = number
+    spf_ttl      = number
+    dmarc_ttl    = number
+    dkim_ttl     = number
     mx_records   = list(object({ priority = number, value = string }))
     spf_record   = string
     dmarc_record = string
     dkim_records = map(string)
   })
   default = {
-    ttl = 14400
+    mx_ttl    = 14400
+    spf_ttl   = 3600
+    dmarc_ttl = 3600
+    dkim_ttl  = 300
     mx_records = [
       { priority = 5, value = "mx1.hostinger.com" },
       { priority = 10, value = "mx2.hostinger.com" },

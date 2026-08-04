@@ -20,7 +20,7 @@ locals {
   } : {}
 
   api_allowed_hosts   = join(",", distinct(concat([var.api_domain_name], ["localhost", "127.0.0.1"])))
-  route53_zone_id     = data.aws_route53_zone.main.zone_id
+  route53_zone_id     = data.aws_route53_zone.main.zone_id # aws_route53_zone.main.zone_id # 
   media_custom_domain = module.storage.media_bucket_domain_name
   api_image_uri       = "${module.storage.api_repository.repository_url}:${var.environment}"
 

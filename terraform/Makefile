@@ -4,10 +4,10 @@ TF = terraform
 WORKSPACE_VARS = "-var-file=envs/$(WORKSPACE).tfvars"
 DECRYPTED_ENV_FILE = envs/secrets/.env.$(WORKSPACE)
 ENCRYPTED_ENV_FILE = $(DECRYPTED_ENV_FILE).age
-LOCK_FILE = s3://corpershub-statefile/envs/$(WORKSPACE)/corpershub.tfstate.tflock
-STATE_FILE = s3://corpershub-statefile/envs/$(WORKSPACE)/corpershub.tfstate
+LOCK_FILE = s3://corpershub-terraform-statefile/envs/$(WORKSPACE)/corpershub.tfstate.tflock
+STATE_FILE = s3://corpershub-terraform-statefile/envs/$(WORKSPACE)/corpershub.tfstate
 LOAD_ENV = set -a && . $(DECRYPTED_ENV_FILE) && set +a
-
+RESOURCE ?= ""
 
 .PHONY: setup encrypt decrypt load-env fmt init reconfig workspace validate plan plan-nolock apply refresh destroy console list unlock down migrate admin seed new-build build up prune
 
@@ -41,6 +41,9 @@ fmt:
 init: fmt
 	@$(TF) init -input=false -upgrade
 
+migrate-state: fmt
+	@$(TF) init -migrate-state
+
 reconfig: fmt
 	@$(TF) init -reconfigure
 
@@ -71,6 +74,13 @@ console: validate
 
 list: workspace
 	@$(TF) state list
+
+remove:
+	AWS_PROFILE=corpershub $(MAKE) workspace
+	AWS_PROFILE=corpershub terraform state rm $(RESOURCE)
+
+pull:
+	@$(LOAD_ENV) && $(TF) state pull
 
 unlock:
 	@if pgrep -x terraform-ls >/dev/null; then \

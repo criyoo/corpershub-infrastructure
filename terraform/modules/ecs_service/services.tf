@@ -36,6 +36,8 @@ resource "aws_ecs_service" "service" {
   }
 
   tags = var.common_tags
+
+  depends_on = [var.alb, var.alb_target_group]
 }
 
 

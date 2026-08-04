@@ -55,3 +55,18 @@ output "cloudfront_distribution" {
 output "private_subnet_cidrs" {
   value = local.private_subnet_cidrs
 }
+
+output "alb" {
+  value = aws_lb.this
+}
+
+output "alb_target_group" {
+  value = aws_lb_target_group.api
+}
+
+
+
+output "vpc" {
+  description = "VPC."
+  value       = aws_vpc.this
+}

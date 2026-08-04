@@ -189,3 +189,14 @@ variable "payment_expiry_trigger_token" {
   type        = string
   sensitive   = true
 }
+
+
+variable "alb" {
+  type        = any
+  description = "ALB resource object"
+}
+
+variable "alb_target_group" {
+  type        = any
+  description = "ALB target group resource object"
+}

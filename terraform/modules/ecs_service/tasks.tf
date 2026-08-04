@@ -79,6 +79,8 @@ resource "aws_ecs_task_definition" "service" {
     operating_system_family = "LINUX"
   }
   tags = var.common_tags
+
+  depends_on = [var.alb, var.alb_target_group]
 }
 
 
@@ -124,4 +126,6 @@ resource "aws_ecs_task_definition" "migration" {
     health_check      = jsonencode({})
   })
   tags = var.common_tags
+
+  depends_on = [var.alb, var.alb_target_group]
 }

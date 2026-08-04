@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-AWS_PROFILE ?= root
+AWS_PROFILE ?= corpershub
 WORKSPACE ?= dev
 INFRA_MAKE := $(MAKE) -C terraform WORKSPACE=$(WORKSPACE) AWS_PROFILE=$(AWS_PROFILE)
 COMPOSE := docker compose -f docker-compose.yml
@@ -28,6 +28,9 @@ reconfig:
 init:
 	@$(INFRA_MAKE) init
 
+migrate-state:
+	@$(INFRA_MAKE) migrate-state
+
 lint:
 	@$(INFRA_MAKE) lint
 
@@ -43,10 +46,14 @@ destroy:
 list:
 	@$(INFRA_MAKE) list
 
+remove:
+	@$(INFRA_MAKE) remove
+
 unlock:
 	@$(INFRA_MAKE) unlock
 
-
+pull:
+	@$(INFRA_MAKE) pull
 
 
 # DOCKER COMMANDS FOR LOCAL ENVIRONMENT
